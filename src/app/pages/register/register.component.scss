@@ -1,0 +1,217 @@
+// ─── Variables ────────────────────────────────────────────────────────────────
+
+$azul-fondo:      #eaf4fc;
+$azul-borde:      #cde3f5;
+$azul-borde-foco: #7ab8d9;
+$azul-input:      #f4f9fd;
+$azul-primario:   #4a9ec7;
+$azul-primario-h: #3a8eb7;
+$azul-titulo:     #1a5c82;
+$azul-label:      #5a9bbf;
+$azul-texto:      #1a3d52;
+$azul-link:       #2a7fa8;
+$azul-muted:      #7aa8bf;
+
+$verde-badge-bg:  #e8f5e9;
+$verde-badge-dot: #4caf7d;
+$verde-badge-txt: #2e7d52;
+
+$rojo-error:      #c0392b;
+
+$radio-card:   18px;
+$radio-campo:  10px;
+$radio-btn:    12px;
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+
+ion-content {
+  --background: linear-gradient(160deg, #{$azul-fondo} 0%, #f7fbff 60%, #edf7f2 100%);
+}
+
+.contenedor-centrado {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  padding: 16px 0 32px;
+}
+
+// ─── Card ─────────────────────────────────────────────────────────────────────
+
+ion-card {
+  width: 100%;
+  max-width: 480px;
+  border-radius: $radio-card !important;
+  border: 1px solid $azul-borde;
+  box-shadow: 0 2px 16px rgba(100, 170, 220, 0.08) !important;
+  margin: 0;
+}
+
+ion-card-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: $azul-titulo;
+  letter-spacing: -0.01em;
+}
+
+// ─── Badge institucional ──────────────────────────────────────────────────────
+
+.badge-institucional {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: $verde-badge-bg;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 16px;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $verde-badge-dot;
+    flex-shrink: 0;
+  }
+
+  span {
+    font-size: 11px;
+    font-weight: 500;
+    color: $verde-badge-txt;
+  }
+}
+
+// ─── Items / Inputs ───────────────────────────────────────────────────────────
+
+ion-item {
+  --background: #{$azul-input};
+  --border-color: #{$azul-borde};
+  --border-radius: #{$radio-campo};
+  --border-width: 1px;
+  --padding-start: 12px;
+  --inner-padding-end: 12px;
+  --highlight-color-focused: #{$azul-borde-foco};
+  --color: #{$azul-texto};
+  border-radius: $radio-campo;
+  margin-bottom: 12px;
+  transition: border-color 0.15s;
+
+  &.ion-invalid.ion-touched {
+    --border-color: #{$rojo-error};
+    --background: #fdf4f4;
+  }
+}
+
+ion-label {
+  --color: #{$azul-label} !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase;
+}
+
+ion-input {
+  --color: #{$azul-texto};
+  --placeholder-color: #{$azul-muted};
+  font-size: 14px;
+}
+
+ion-select {
+  --color: #{$azul-texto};
+  --placeholder-color: #{$azul-muted};
+  font-size: 14px;
+}
+
+// ─── Botón ojo (mostrar/ocultar contraseña) ───────────────────────────────────
+
+ion-button[fill="clear"][slot="end"] {
+  --color: #{$azul-muted};
+  --ripple-color: transparent;
+  margin: 0;
+
+  &:hover {
+    --color: #{$azul-primario};
+  }
+}
+
+// ─── Sección escaneo DNI ──────────────────────────────────────────────────────
+
+.seccion-escaneo {
+  margin-bottom: 4px;
+
+  ion-button[fill="outline"] {
+    --border-color: #{$azul-borde-foco};
+    --border-style: dashed;
+    --border-width: 1.5px;
+    --color: #{$azul-primario};
+    --background: #{$azul-fondo};
+    --background-hover: #daeef8;
+    --border-radius: #{$radio-campo};
+    font-weight: 500;
+    font-size: 13px;
+  }
+}
+
+.sugerencia-escaneo {
+  font-size: 11px;
+  color: $azul-muted;
+  text-align: center;
+  line-height: 1.5;
+  margin: 6px 0 16px;
+  padding: 0 4px;
+}
+
+// ─── Divisor ─────────────────────────────────────────────────────────────────
+
+.divisor {
+  border: none;
+  border-top: 1px solid $azul-borde;
+  margin: 16px 0;
+}
+
+// ─── Mensajes de error ────────────────────────────────────────────────────────
+
+.mensaje-error {
+  font-size: 11px;
+  color: $rojo-error;
+  padding: 2px 4px 8px;
+  line-height: 1.4;
+}
+
+.error-general {
+  background: #fdf4f4;
+  border: 1px solid #f5c6c6;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+// ─── Botón principal ──────────────────────────────────────────────────────────
+
+ion-button[expand="block"]:not([fill]) {
+  --background: #{$azul-primario};
+  --background-hover: #{$azul-primario-h};
+  --background-activated: #{$azul-primario-h};
+  --border-radius: #{$radio-btn};
+  --color: #fff;
+  --box-shadow: none;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+}
+
+// ─── Enlace a login ───────────────────────────────────────────────────────────
+
+.enlace-ingreso {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 12px;
+  color: $azul-muted;
+
+  ion-router-link {
+    color: $azul-link;
+    font-weight: 500;
+    text-decoration: none;
+  }
+}

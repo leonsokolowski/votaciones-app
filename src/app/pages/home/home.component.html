@@ -1,0 +1,17 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="center-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title class="ion-text-center">Bienvenido {{auth.usuario_actual?.email}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+          <div class="ion-padding">
+            <ion-button expand="block" (click)="logout()">
+              Cerrar Sesión
+            </ion-button>
+          </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+  
+</ion-content>

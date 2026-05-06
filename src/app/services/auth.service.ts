@@ -2,6 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { Router } from '@angular/router';
 import { User } from '@supabase/supabase-js';
+import { filter, take } from 'rxjs/operators';
+import { NavigationEnd } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -24,13 +26,24 @@ export class AuthService {
         
         // Redirigir al login
         this.router.navigateByUrl("/login");
-      } else { // Si hay sesión
+      } else {
         this.usuario_actual = session.user;
-        const currentUrl = this.router.url;
+        console.log('URL actual:', this.router.url);
+        // Esperamos a que el router esté estable antes de chequear la URL
+        this.router.events.pipe(
+          filter(e => e instanceof NavigationEnd),
+          take(1)
+        ).subscribe(() => {
+          const currentUrl = this.router.url;
+          if (currentUrl === '/login' || currentUrl === '/registro' || currentUrl === '/') {
+            this.router.navigateByUrl('/home');
+          }
+        });
 
+        // Si el router ya está en una de esas rutas y no hay navegación en curso
+        const currentUrl = this.router.url;
         if (currentUrl === '/login' || currentUrl === '/registro' || currentUrl === '/') {
-          // Redirigir al home
-          this.router.navigateByUrl("/home");
+          this.router.navigateByUrl('/home');
         }
       }
     });

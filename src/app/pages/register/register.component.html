@@ -2,7 +2,13 @@
   <div class="contenedor-centrado">
     <ion-card>
       <ion-card-header>
-        <ion-card-title class="ion-text-center">Registro</ion-card-title>
+        <div class="encabezado-registro">
+          <div class="icono-registro">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
+          <ion-card-title>Registro</ion-card-title>
+          <p class="subtitulo-registro">Creá tu cuenta para participar en las votaciones</p>
+        </div>
       </ion-card-header>
 
       <ion-card-content>
@@ -15,50 +21,69 @@
               <ion-spinner *ngIf="escaneandoDni" name="crescent" slot="start"></ion-spinner>
               {{ escaneandoDni ? 'Escaneando...' : 'Escanear DNI' }}
             </ion-button>
-            <p class="sugerencia-escaneo">Podés escanear el código de barras del DNI para completar los campos automáticamente.</p>
+            <p class="sugerencia-escaneo">
+              Escaneá el código de barras del dorso de tu DNI para completar los datos automáticamente.
+            </p>
           </div>
 
-          <!-- ── Nombre ───────────────────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('nombre')" [class.ion-touched]="formularioRegistro.get('nombre')?.touched">
-            <ion-label position="floating">Nombre</ion-label>
-            <ion-input
-              type="text"
-              formControlName="nombre"
-              (ionBlur)="validarNombre()">
-            </ion-input>
-          </ion-item>
-          <div class="mensaje-error" *ngIf="esInvalido('nombre')">{{ obtenerError('nombre') }}</div>
+          <!-- ── Nombre y Apellido (fila doble) ─────────────────── -->
+          <div class="divisor-seccion">Datos personales</div>
 
-          <!-- ── Apellido ─────────────────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('apellido')" [class.ion-touched]="formularioRegistro.get('apellido')?.touched">
-            <ion-label position="floating">Apellido</ion-label>
-            <ion-input
-              type="text"
-              formControlName="apellido"
-              (ionBlur)="validarApellido()">
-            </ion-input>
-          </ion-item>
-          <div class="mensaje-error" *ngIf="esInvalido('apellido')">{{ obtenerError('apellido') }}</div>
+          <div class="fila-doble">
+            <div>
+              <ion-item
+                [class.ion-invalid]="esInvalido('nombre')"
+                [class.ion-touched]="formularioRegistro.get('nombre')?.touched">
+                <ion-label position="floating">Nombre</ion-label>
+                <ion-input
+                  type="text"
+                  formControlName="nombre"
+                  (ionBlur)="validarNombre()">
+                </ion-input>
+              </ion-item>
+              <div class="mensaje-error" *ngIf="esInvalido('nombre')">{{ obtenerError('nombre') }}</div>
+            </div>
+
+            <div>
+              <ion-item
+                [class.ion-invalid]="esInvalido('apellido')"
+                [class.ion-touched]="formularioRegistro.get('apellido')?.touched">
+                <ion-label position="floating">Apellido</ion-label>
+                <ion-input
+                  type="text"
+                  formControlName="apellido"
+                  (ionBlur)="validarApellido()">
+                </ion-input>
+              </ion-item>
+              <div class="mensaje-error" *ngIf="esInvalido('apellido')">{{ obtenerError('apellido') }}</div>
+            </div>
+          </div>
 
           <!-- ── DNI ─────────────────────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('dni')" [class.ion-touched]="formularioRegistro.get('dni')?.touched">
+          <ion-item
+            [class.ion-invalid]="esInvalido('dni')"
+            [class.ion-touched]="formularioRegistro.get('dni')?.touched">
             <ion-label position="floating">DNI</ion-label>
             <ion-input
               type="text"
               inputmode="numeric"
               formControlName="dni"
+              placeholder="Sin puntos (ej: 12345678)"
               (ionBlur)="validarDni()">
             </ion-input>
           </ion-item>
           <div class="mensaje-error" *ngIf="esInvalido('dni')">{{ obtenerError('dni') }}</div>
 
           <!-- ── Provincia ───────────────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('provincia')" [class.ion-touched]="formularioRegistro.get('provincia')?.touched">
+          <ion-item
+            [class.ion-invalid]="esInvalido('provincia')"
+            [class.ion-touched]="formularioRegistro.get('provincia')?.touched">
             <ion-label position="floating">Provincia</ion-label>
             <ion-select
               formControlName="provincia"
               interface="action-sheet"
               cancelText="Cancelar"
+              placeholder="Seleccioná tu provincia"
               (ionDismiss)="validarProvincia()">
               <ion-select-option *ngFor="let prov of provincias" [value]="prov">{{ prov }}</ion-select-option>
             </ion-select>
@@ -66,7 +91,9 @@
           <div class="mensaje-error" *ngIf="esInvalido('provincia')">{{ obtenerError('provincia') }}</div>
 
           <!-- ── Ciudad ─────────────────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('ciudad')" [class.ion-touched]="formularioRegistro.get('ciudad')?.touched">
+          <ion-item
+            [class.ion-invalid]="esInvalido('ciudad')"
+            [class.ion-touched]="formularioRegistro.get('ciudad')?.touched">
             <ion-label position="floating">Ciudad</ion-label>
             <ion-input
               type="text"
@@ -77,7 +104,9 @@
           <div class="mensaje-error" *ngIf="esInvalido('ciudad')">{{ obtenerError('ciudad') }}</div>
 
           <!-- ── Teléfono ────────────────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('telefono')" [class.ion-touched]="formularioRegistro.get('telefono')?.touched">
+          <ion-item
+            [class.ion-invalid]="esInvalido('telefono')"
+            [class.ion-touched]="formularioRegistro.get('telefono')?.touched">
             <ion-label position="floating">Teléfono</ion-label>
             <ion-input
               type="tel"
@@ -89,18 +118,25 @@
           <div class="mensaje-error" *ngIf="esInvalido('telefono')">{{ obtenerError('telefono') }}</div>
 
           <!-- ── Correo electrónico ──────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('correo')" [class.ion-touched]="formularioRegistro.get('correo')?.touched">
+          <div class="divisor-seccion">Credenciales de acceso</div>
+
+          <ion-item
+            [class.ion-invalid]="esInvalido('correo')"
+            [class.ion-touched]="formularioRegistro.get('correo')?.touched">
             <ion-label position="floating">Correo electrónico</ion-label>
             <ion-input
               type="email"
               formControlName="correo"
+              placeholder="usuario@dominio.com"
               (ionBlur)="validarCorreo()">
             </ion-input>
           </ion-item>
           <div class="mensaje-error" *ngIf="esInvalido('correo')">{{ obtenerError('correo') }}</div>
 
           <!-- ── Contraseña ──────────────────────────────────────── -->
-          <ion-item [class.ion-invalid]="esInvalido('contrasena')" [class.ion-touched]="formularioRegistro.get('contrasena')?.touched">
+          <ion-item
+            [class.ion-invalid]="esInvalido('contrasena')"
+            [class.ion-touched]="formularioRegistro.get('contrasena')?.touched">
             <ion-label position="floating">Contraseña</ion-label>
             <ion-input
               [type]="mostrarContrasena ? 'text' : 'password'"
@@ -128,17 +164,17 @@
             </ion-button>
           </ion-item>
           <div class="mensaje-error" *ngIf="esInvalido('confirmar_contrasena')">{{ obtenerError('confirmar_contrasena') }}</div>
-          <div class="mensaje-error" *ngIf="contrasenasNoCoinciden">Las contraseñas no coinciden.</div>
+          <div class="mensaje-error" *ngIf="contrasenasNoCoinciden">Las contraseñas no coinciden. Verificá que hayas escrito la misma contraseña en ambos campos.</div>
 
           <!-- ── Error general ───────────────────────────────────── -->
-          <div class="mensaje-error error-general" *ngIf="mensajeError">
+          <div class="error-general" *ngIf="mensajeError">
             {{ mensajeError }}
           </div>
 
           <!-- ── Botón registrarse ───────────────────────────────── -->
           <div class="ion-padding">
             <ion-button expand="block" (click)="registrar()">
-              Registrarse
+              Crear cuenta
             </ion-button>
           </div>
 

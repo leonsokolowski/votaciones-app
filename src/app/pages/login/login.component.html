@@ -2,36 +2,70 @@
   <div class="center-container">
     <ion-card>
       <ion-card-header>
-        <ion-card-title class="ion-text-center">Iniciar Sesión</ion-card-title>
+        <div class="encabezado-login">
+          <div class="icono-login">
+            <ion-icon name="ballot-outline"></ion-icon>
+          </div>
+          <ion-card-title>Iniciar Sesión</ion-card-title>
+          <p class="subtitulo-login">Ingresá para acceder al sistema de votación</p>
+        </div>
       </ion-card-header>
 
       <ion-card-content>
         <form [formGroup]="formLogin">
-          <ion-item>
-            <ion-label position="floating">Correo</ion-label>
-            <ion-input type="email" formControlName="email"></ion-input>
-          </ion-item>
 
-          <ion-item>
+          <!-- ── Correo ──────────────────────────────────────────── -->
+          <ion-item
+            [class.ion-invalid]="esInvalido('email')"
+            [class.ion-touched]="formLogin.get('email')?.touched">
+            <ion-label position="floating">Correo electrónico</ion-label>
+            <ion-input
+              type="email"
+              formControlName="email"
+              placeholder="usuario@dominio.com"
+              (ionBlur)="validarEmail()">
+            </ion-input>
+          </ion-item>
+          <div class="error-campo" *ngIf="esInvalido('email')">
+            <span>{{ obtenerError('email') }}</span>
+          </div>
+
+          <!-- ── Contraseña ──────────────────────────────────────── -->
+          <ion-item
+            [class.ion-invalid]="esInvalido('password')"
+            [class.ion-touched]="formLogin.get('password')?.touched">
             <ion-label position="floating">Contraseña</ion-label>
-            <ion-input type="password" formControlName="password"></ion-input>
+            <ion-input
+              type="password"
+              formControlName="password"
+              (ionBlur)="validarPassword()">
+            </ion-input>
           </ion-item>
+          <div class="error-campo" *ngIf="esInvalido('password')">
+            <span>{{ obtenerError('password') }}</span>
+          </div>
 
-          <div class="error-msg" *ngIf="errorMessage">
+          <!-- ── Error general ───────────────────────────────────── -->
+          <div class="error-general" *ngIf="errorMessage">
             {{ errorMessage }}
           </div>
 
+          <!-- ── Botón ingresar ──────────────────────────────────── -->
           <div class="ion-padding">
             <ion-button expand="block" (click)="login()">
               Ingresar
             </ion-button>
           </div>
 
+          <!-- ── Enlace a registro ───────────────────────────────── -->
           <div class="register-link">
             <label>
-              <ion-router-link [routerLink]="'/register'">¿No tenés una cuenta? Registrate.</ion-router-link>
+              <ion-router-link [routerLink]="'/register'">
+                ¿No tenés una cuenta? Registrate.
+              </ion-router-link>
             </label>
           </div>
+
         </form>
       </ion-card-content>
     </ion-card>

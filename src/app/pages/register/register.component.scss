@@ -1,31 +1,34 @@
 // ─── Variables ────────────────────────────────────────────────────────────────
 
-$azul-fondo:      #eaf4fc;
-$azul-borde:      #cde3f5;
-$azul-borde-foco: #7ab8d9;
-$azul-input:      #f4f9fd;
-$azul-primario:   #4a9ec7;
-$azul-primario-h: #3a8eb7;
-$azul-titulo:     #1a5c82;
-$azul-label:      #5a9bbf;
-$azul-texto:      #1a3d52;
-$azul-link:       #2a7fa8;
-$azul-muted:      #7aa8bf;
+$blanco:          #ffffff;
+$fondo:           #f0f7fc;
 
-$verde-badge-bg:  #e8f5e9;
-$verde-badge-dot: #4caf7d;
-$verde-badge-txt: #2e7d52;
+$celeste-claro:   #daeef9;
+$celeste-borde:   #b8dcf0;
+$celeste-foco:    #5aabda;
+$celeste-input:   #f5fafd;
+$celeste-primario:#3d9fd3;
+$celeste-hover:   #2d8fc3;
+$celeste-outline: #5aabda;
+$celeste-titulo:  #1b5f84;
+$celeste-label:   #4a8fb5;
+$celeste-texto:   #1a3d54;
+$celeste-link:    #2278a8;
+$celeste-muted:   #82afc8;
+$celeste-suave:   #c8e6f5;
 
 $rojo-error:      #c0392b;
+$rojo-error-bg:   #fff5f5;
+$rojo-error-borde:#f5c2c2;
 
-$radio-card:   18px;
-$radio-campo:  10px;
-$radio-btn:    12px;
+$radio-card:  20px;
+$radio-campo: 12px;
+$radio-btn:   12px;
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
 ion-content {
-  --background: linear-gradient(160deg, #{$azul-fondo} 0%, #f7fbff 60%, #edf7f2 100%);
+  --background: #{$fondo};
 }
 
 .contenedor-centrado {
@@ -33,7 +36,9 @@ ion-content {
   justify-content: center;
   align-items: flex-start;
   min-height: 100%;
-  padding: 16px 0 32px;
+  padding: 24px 16px 40px;
+  position: relative;
+  z-index: 1;
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
@@ -42,176 +47,270 @@ ion-card {
   width: 100%;
   max-width: 480px;
   border-radius: $radio-card !important;
-  border: 1px solid $azul-borde;
-  box-shadow: 0 2px 16px rgba(100, 170, 220, 0.08) !important;
+  border: 1px solid $celeste-borde;
+  box-shadow:
+    0 4px 24px rgba(61, 159, 211, 0.10),
+    0 1px 4px rgba(0, 0, 0, 0.04) !important;
+  background: $blanco !important;
   margin: 0;
 }
 
-ion-card-title {
-  font-size: 20px;
-  font-weight: 500;
-  color: $azul-titulo;
-  letter-spacing: -0.01em;
+ion-card-header {
+  padding-bottom: 4px;
 }
 
-// ─── Badge institucional ──────────────────────────────────────────────────────
+ion-card-content {
+  padding-top: 8px !important;
+}
 
-.badge-institucional {
+// ─── Encabezado ───────────────────────────────────────────────────────────────
+
+.encabezado-registro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 16px;
+}
+
+.icono-registro {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, $celeste-claro 0%, $celeste-suave 100%);
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: $verde-badge-bg;
-  border-radius: 8px;
-  padding: 6px 10px;
-  margin-bottom: 16px;
+  justify-content: center;
+  border: 1.5px solid $celeste-borde;
 
-  &::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: $verde-badge-dot;
-    flex-shrink: 0;
+  ion-icon {
+    font-size: 26px;
+    color: $celeste-primario;
   }
+}
 
-  span {
-    font-size: 11px;
-    font-weight: 500;
-    color: $verde-badge-txt;
+ion-card-title {
+  font-size: 21px;
+  font-weight: 650;
+  color: $celeste-titulo;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.subtitulo-registro {
+  font-size: 13px;
+  color: $celeste-muted;
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// ─── Sección escaneo DNI ──────────────────────────────────────────────────────
+
+.seccion-escaneo {
+  background: linear-gradient(135deg, rgba(218, 238, 249, 0.5) 0%, rgba(200, 230, 245, 0.3) 100%);
+  border: 1.5px dashed $celeste-outline;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  text-align: center;
+
+  ion-button[fill="outline"] {
+    --border-color: #{$celeste-outline};
+    --border-style: solid;
+    --border-width: 1.5px;
+    --color: #{$celeste-primario};
+    --background: #{$blanco};
+    --background-hover: #{$celeste-claro};
+    --border-radius: #{$radio-campo};
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+}
+
+.sugerencia-escaneo {
+  font-size: 11.5px;
+  color: $celeste-muted;
+  text-align: center;
+  line-height: 1.5;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+// ─── Divisor de sección ───────────────────────────────────────────────────────
+
+.divisor-seccion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+  color: $celeste-muted;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: $celeste-claro;
   }
 }
 
 // ─── Items / Inputs ───────────────────────────────────────────────────────────
 
 ion-item {
-  --background: #{$azul-input};
-  --border-color: #{$azul-borde};
+  --background: #{$celeste-input};
+  --border-color: #{$celeste-borde};
   --border-radius: #{$radio-campo};
-  --border-width: 1px;
+  --border-width: 1.5px;
   --padding-start: 12px;
   --inner-padding-end: 12px;
-  --highlight-color-focused: #{$azul-borde-foco};
-  --color: #{$azul-texto};
+  --highlight-color-focused: #{$celeste-foco};
+  --color: #{$celeste-texto};
+  --min-height: 48px;
   border-radius: $radio-campo;
-  margin-bottom: 12px;
-  transition: border-color 0.15s;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
 
   &.ion-invalid.ion-touched {
     --border-color: #{$rojo-error};
-    --background: #fdf4f4;
+    --background: #{$rojo-error-bg};
+  }
+
+  &:focus-within {
+    box-shadow: 0 0 0 3px rgba(61, 159, 211, 0.15);
   }
 }
 
 ion-label {
-  --color: #{$azul-label} !important;
+  --color: #{$celeste-label} !important;
   font-size: 11px !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.04em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
   text-transform: uppercase;
 }
 
 ion-input {
-  --color: #{$azul-texto};
-  --placeholder-color: #{$azul-muted};
-  font-size: 14px;
+  --color: #{$celeste-texto};
+  --placeholder-color: #{$celeste-muted};
+  font-size: 14.5px;
 }
 
 ion-select {
-  --color: #{$azul-texto};
-  --placeholder-color: #{$azul-muted};
-  font-size: 14px;
+  --color: #{$celeste-texto};
+  --placeholder-color: #{$celeste-muted};
+  font-size: 14.5px;
 }
 
 // ─── Botón ojo (mostrar/ocultar contraseña) ───────────────────────────────────
 
 ion-button[fill="clear"][slot="end"] {
-  --color: #{$azul-muted};
+  --color: #{$celeste-muted};
   --ripple-color: transparent;
   margin: 0;
+  transition: color 0.15s;
 
-  &:hover {
-    --color: #{$azul-primario};
-  }
+  &:hover { --color: #{$celeste-primario}; }
 }
 
-// ─── Sección escaneo DNI ──────────────────────────────────────────────────────
-
-.seccion-escaneo {
-  margin-bottom: 4px;
-
-  ion-button[fill="outline"] {
-    --border-color: #{$azul-borde-foco};
-    --border-style: dashed;
-    --border-width: 1.5px;
-    --color: #{$azul-primario};
-    --background: #{$azul-fondo};
-    --background-hover: #daeef8;
-    --border-radius: #{$radio-campo};
-    font-weight: 500;
-    font-size: 13px;
-  }
-}
-
-.sugerencia-escaneo {
-  font-size: 11px;
-  color: $azul-muted;
-  text-align: center;
-  line-height: 1.5;
-  margin: 6px 0 16px;
-  padding: 0 4px;
-}
-
-// ─── Divisor ─────────────────────────────────────────────────────────────────
-
-.divisor {
-  border: none;
-  border-top: 1px solid $azul-borde;
-  margin: 16px 0;
-}
-
-// ─── Mensajes de error ────────────────────────────────────────────────────────
+// ─── Mensajes de error por campo ─────────────────────────────────────────────
 
 .mensaje-error {
-  font-size: 11px;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  margin: 5px 2px 12px;
+  animation: deslizarError 0.2s ease;
+
+  &::before {
+    content: '!';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border-radius: 50%;
+    background: $rojo-error;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  font-size: 12px;
   color: $rojo-error;
-  padding: 2px 4px 8px;
-  line-height: 1.4;
+  line-height: 1.5;
+}
+
+@keyframes deslizarError {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .error-general {
-  background: #fdf4f4;
-  border: 1px solid #f5c6c6;
-  border-radius: 8px;
-  padding: 8px 12px;
-  margin: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: $rojo-error-bg;
+  border: 1.5px solid $rojo-error-borde;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 10px 0;
   font-size: 13px;
+  color: $rojo-error;
+  line-height: 1.5;
+  animation: deslizarError 0.25s ease;
+
+  &::before {
+    content: '⚠';
+    font-size: 14px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+}
+
+// ─── Grupo de 2 campos lado a lado (nombre + apellido) ────────────────────────
+
+.fila-doble {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 // ─── Botón principal ──────────────────────────────────────────────────────────
 
 ion-button[expand="block"]:not([fill]) {
-  --background: #{$azul-primario};
-  --background-hover: #{$azul-primario-h};
-  --background-activated: #{$azul-primario-h};
+  --background: #{$celeste-primario};
+  --background-hover: #{$celeste-hover};
+  --background-activated: #{$celeste-hover};
   --border-radius: #{$radio-btn};
   --color: #fff;
-  --box-shadow: none;
-  font-weight: 500;
-  font-size: 14px;
-  letter-spacing: 0.01em;
+  --box-shadow: 0 2px 12px rgba(61, 159, 211, 0.30);
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: 0.02em;
+  height: 46px;
+  margin-top: 4px;
 }
 
 // ─── Enlace a login ───────────────────────────────────────────────────────────
 
 .enlace-ingreso {
   text-align: center;
-  margin-top: 14px;
-  font-size: 12px;
-  color: $azul-muted;
+  margin-top: 16px;
+  font-size: 13px;
+  color: $celeste-muted;
 
   ion-router-link {
-    color: $azul-link;
-    font-weight: 500;
+    color: $celeste-link;
+    font-weight: 600;
     text-decoration: none;
+
+    &:hover { text-decoration: underline; }
   }
 }

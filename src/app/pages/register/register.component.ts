@@ -15,7 +15,7 @@ import {
   IonCard, IonCardContent, IonCardHeader, IonCardTitle,
   IonSelect, IonSelectOption, IonIcon, IonSpinner
 } from '@ionic/angular/standalone';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { addIcons } from 'ionicons';
 import { scanOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
@@ -62,6 +62,20 @@ export const PROVINCIAS_AR = [
   'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán'
 ];
 
+// ─── Nombres amigables para cada campo ───────────────────────────────────────
+
+const NOMBRES_CAMPOS: Record<string, string> = {
+  correo:               'El correo electrónico',
+  contrasena:           'La contraseña',
+  confirmar_contrasena: 'La confirmación de contraseña',
+  nombre:               'El nombre',
+  apellido:             'El apellido',
+  dni:                  'El DNI',
+  provincia:            'La provincia',
+  ciudad:               'La ciudad',
+  telefono:             'El teléfono',
+};
+
 // ─── Componente ───────────────────────────────────────────────────────────────
 
 @Component({
@@ -80,11 +94,12 @@ export const PROVINCIAS_AR = [
 export class RegisterComponent implements OnInit {
 
   auth = inject(AuthService);
-  db = inject(DbService);
+  db   = inject(DbService);
 
   provincias = PROVINCIAS_AR;
-  mensajeError = '';
-  mostrarContrasena = false;
+  mensajeError        = '';
+  mensajeConfirmacion = '';
+  mostrarContrasena          = false;
   mostrarConfirmarContrasena = false;
   escaneandoDni = false;
 
@@ -103,7 +118,7 @@ export class RegisterComponent implements OnInit {
     { validators: validadorContrasenasIguales }
   );
 
-  constructor() {
+  constructor(private router: Router) {
     addIcons({ scanOutline, eyeOutline, eyeOffOutline });
   }
 
@@ -117,17 +132,62 @@ export class RegisterComponent implements OnInit {
     return !!(control?.invalid && control?.touched);
   }
 
-  /** Mensaje de error específico por campo */
+  /** Mensaje de error específico y detallado por campo */
   obtenerError(campo: string): string {
-    const control = this.formularioRegistro.get(campo);
+    const control  = this.formularioRegistro.get(campo);
+    const nombreCampo = NOMBRES_CAMPOS[campo] ?? 'Este campo';
+
     if (!control?.errors || !control.touched) return '';
 
-    if (control.errors['required'])        return 'Este campo es obligatorio.';
-    if (control.errors['email'])           return 'Ingresá un correo electrónico válido.';
-    if (control.errors['minlength'])       return `Mínimo ${control.errors['minlength'].requiredLength} caracteres.`;
-    if (control.errors['nombreInvalido'])  return 'Solo se permiten letras y espacios (mín. 2 caracteres).';
-    if (control.errors['dniInvalido'])     return 'El DNI debe tener 7 u 8 dígitos.';
-    if (control.errors['telefonoInvalido']) return 'Ingresá un teléfono válido (ej: 1123456789 o +541123456789).';
+    if (control.errors['required']) {
+      return `${nombreCampo} es obligatorio.`;
+    }
+
+    if (control.errors['email']) {
+      return 'Ingresá una dirección de correo válida (ej: usuario@dominio.com).';
+    }
+
+    if (control.errors['minlength']) {
+      const requerido = control.errors['minlength'].requiredLength;
+      const actual    = control.errors['minlength'].actualLength;
+      return `${nombreCampo} debe tener al menos ${requerido} caracteres. Actualmente tiene ${actual}.`;
+    }
+
+    if (control.errors['maxlength']) {
+      const maximo = control.errors['maxlength'].requiredLength;
+      const actual = control.errors['maxlength'].actualLength;
+      return `${nombreCampo} no puede superar los ${maximo} caracteres. Actualmente tiene ${actual}.`;
+    }
+
+    if (control.errors['nombreInvalido']) {
+      return 'Solo se permiten letras, acentos y espacios. No uses números ni caracteres especiales. Mínimo 2 caracteres.';
+    }
+
+    if (control.errors['dniInvalido']) {
+      const valor = control.value?.toString().replace(/\./g, '') ?? '';
+      if (valor.length < 7) {
+        return `El DNI debe tener entre 7 y 8 dígitos. Faltan ${7 - valor.length} dígito${7 - valor.length !== 1 ? 's' : ''}.`;
+      }
+      if (valor.length > 8) {
+        return `El DNI no puede superar 8 dígitos. Tiene ${valor.length - 8} dígito${valor.length - 8 !== 1 ? 's' : ''} de más.`;
+      }
+      return 'El DNI solo debe contener dígitos, sin puntos ni espacios.';
+    }
+
+    if (control.errors['telefonoInvalido']) {
+      const limpio = control.value?.toString().replace(/[\s\-\(\)]/g, '') ?? '';
+      const sinPrefijo = limpio.startsWith('+54') ? limpio.slice(3) : limpio;
+      if (!/^\d+$/.test(sinPrefijo)) {
+        return 'El teléfono solo debe contener números. Podés incluir el prefijo +54 al inicio.';
+      }
+      if (sinPrefijo.length < 10) {
+        return `El teléfono debe tener 10 dígitos (sin el prefijo +54). Faltan ${10 - sinPrefijo.length} dígito${10 - sinPrefijo.length !== 1 ? 's' : ''}. Ej: 1123456789.`;
+      }
+      if (sinPrefijo.length > 10) {
+        return `El teléfono no puede superar 10 dígitos (sin el prefijo +54). Tiene ${sinPrefijo.length - 10} de más.`;
+      }
+      return 'Ingresá un teléfono válido. Ej: 1123456789 o +541123456789.';
+    }
 
     return 'Campo inválido.';
   }
@@ -142,72 +202,35 @@ export class RegisterComponent implements OnInit {
 
   // ─── Validación individual por campo ───────────────────────────────────────
 
-  validarCorreo(): void {
-    this.formularioRegistro.get('correo')?.markAsTouched();
-  }
+  validarCorreo(): void { this.formularioRegistro.get('correo')?.markAsTouched(); }
 
   validarContrasena(): void {
     const contrasena = this.formularioRegistro.get('contrasena');
     const confirmar  = this.formularioRegistro.get('confirmar_contrasena');
     contrasena?.markAsTouched();
-    // Re-validar confirmar si ya fue tocado
     if (confirmar?.touched) confirmar.updateValueAndValidity();
   }
 
-  validarConfirmarContrasena(): void {
-    this.formularioRegistro.get('confirmar_contrasena')?.markAsTouched();
-  }
-
-  validarNombre(): void {
-    this.formularioRegistro.get('nombre')?.markAsTouched();
-  }
-
-  validarApellido(): void {
-    this.formularioRegistro.get('apellido')?.markAsTouched();
-  }
-
-  validarDni(): void {
-    this.formularioRegistro.get('dni')?.markAsTouched();
-  }
-
-  validarProvincia(): void {
-    this.formularioRegistro.get('provincia')?.markAsTouched();
-  }
-
-  validarCiudad(): void {
-    this.formularioRegistro.get('ciudad')?.markAsTouched();
-  }
-
-  validarTelefono(): void {
-    this.formularioRegistro.get('telefono')?.markAsTouched();
-  }
+  validarConfirmarContrasena(): void { this.formularioRegistro.get('confirmar_contrasena')?.markAsTouched(); }
+  validarNombre(): void    { this.formularioRegistro.get('nombre')?.markAsTouched(); }
+  validarApellido(): void  { this.formularioRegistro.get('apellido')?.markAsTouched(); }
+  validarDni(): void       { this.formularioRegistro.get('dni')?.markAsTouched(); }
+  validarProvincia(): void { this.formularioRegistro.get('provincia')?.markAsTouched(); }
+  validarCiudad(): void    { this.formularioRegistro.get('ciudad')?.markAsTouched(); }
+  validarTelefono(): void  { this.formularioRegistro.get('telefono')?.markAsTouched(); }
 
   // ─── Mostrar/ocultar contraseña ────────────────────────────────────────────
 
-  alternarContrasena(): void {
-    this.mostrarContrasena = !this.mostrarContrasena;
-  }
-
-  alternarConfirmarContrasena(): void {
-    this.mostrarConfirmarContrasena = !this.mostrarConfirmarContrasena;
-  }
+  alternarContrasena(): void          { this.mostrarContrasena = !this.mostrarContrasena; }
+  alternarConfirmarContrasena(): void { this.mostrarConfirmarContrasena = !this.mostrarConfirmarContrasena; }
 
   // ─── Escáner de DNI ────────────────────────────────────────────────────────
 
-  /**
-   * Escanea el código de barras PDF417 del DNI argentino.
-   * Requiere instalar: npm install @capacitor-mlkit/barcode-scanning
-   * y agregar los permisos de cámara en AndroidManifest.xml / Info.plist.
-   *
-   * El código PDF417 del DNI argentino contiene:
-   * @APELLIDO@NOMBRE@SEXO@DNI@EJEMPLO@FECHANAC@...
-   */
   async escanearDni(): Promise<void> {
     this.escaneandoDni = true;
-    this.mensajeError = '';
+    this.mensajeError  = '';
 
     try {
-      // Importación dinámica para no romper en entornos web sin Capacitor
       const { BarcodeScanner, BarcodeFormat } = await import('@capacitor-mlkit/barcode-scanning');
 
       const concedido = await this.solicitarPermisoCamara(BarcodeScanner);
@@ -216,23 +239,20 @@ export class RegisterComponent implements OnInit {
         return;
       }
 
-      const { barcodes } = await BarcodeScanner.scan({
-        formats: [BarcodeFormat.Pdf417]
-      });
+      const { barcodes } = await BarcodeScanner.scan({ formats: [BarcodeFormat.Pdf417] });
 
       const codigoCrudo = barcodes[0]?.rawValue;
       if (barcodes.length > 0 && codigoCrudo) {
         this.procesarCodigoDni(codigoCrudo);
       } else {
-        this.mensajeError = 'No se detectó ningún código. Intentá de nuevo.';
+        this.mensajeError = 'No se detectó ningún código. Asegurate de enfocar bien el código de barras y que haya buena iluminación.';
       }
 
     } catch (error: any) {
-      // Mensaje amigable si se ejecuta en el navegador sin cámara real
       if (error?.message?.includes('not implemented') || error?.message?.includes('not available')) {
-        this.mensajeError = 'El escaneo de DNI solo está disponible en dispositivos móviles.';
+        this.mensajeError = 'El escaneo de DNI solo está disponible en dispositivos móviles con cámara.';
       } else {
-        this.mensajeError = 'Error al escanear el DNI. Intentá de nuevo.';
+        this.mensajeError = 'Ocurrió un error al intentar escanear el DNI. Por favor, intentá de nuevo.';
         console.error('Error al escanear DNI:', error);
       }
     } finally {
@@ -240,49 +260,34 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  /** Solicita permiso de cámara; retorna true si fue concedido */
   private async solicitarPermisoCamara(escaner: any): Promise<boolean> {
     const { camera: estadoActual } = await escaner.checkPermissions();
     if (estadoActual === 'granted') return true;
-
     const { camera: nuevoEstado } = await escaner.requestPermissions();
     return nuevoEstado === 'granted';
   }
 
-  /**
-   * Procesa el string del código de barras del DNI argentino.
-   * Formato PDF417: @APELLIDO@NOMBRE@SEXO@NRO_DOC@TRAMITE@NACIMIENTO@...
-   */
   private procesarCodigoDni(codigoCrudo: string): void {
-    // El PDF417 usa '@' como separador
-    const partes = codigoCrudo.split('@').filter(p => p.trim() !== '');
+    const partes = codigoCrudo.split('@').filter((p: string) => p.trim() !== '');
 
     if (partes.length < 4) {
-      this.mensajeError = 'No se pudo leer el DNI. Asegurate de enfocar bien el código de barras.';
+      this.mensajeError = 'No se pudo leer la información del DNI. Asegurate de enfocar bien el código de barras PDF417 (el más largo, al dorso del DNI).';
       return;
     }
 
-    const apellido = this.convertirATituloMayuscula(partes[0]);
-    const nombre   = this.convertirATituloMayuscula(partes[1]);
-    const dni      = partes[3]?.replace(/\./g, '').trim();
-
-    // Si el nombre completo tiene varios nombres, tomamos solo el primero
+    const apellido    = this.convertirATituloMayuscula(partes[0]);
+    const nombre      = this.convertirATituloMayuscula(partes[1]);
+    const dni         = partes[3]?.replace(/\./g, '').trim();
     const primerNombre = nombre.split(' ')[0] ?? '';
 
-    this.formularioRegistro.patchValue({
-      apellido: apellido,
-      nombre:   primerNombre,
-      dni:      dni,
-    });
+    this.formularioRegistro.patchValue({ apellido, nombre: primerNombre, dni });
 
-    // Marcar como tocados para que muestren estado válido
     ['apellido', 'nombre', 'dni'].forEach(campo => {
       this.formularioRegistro.get(campo)?.markAsTouched();
       this.formularioRegistro.get(campo)?.updateValueAndValidity();
     });
   }
 
-  /** Convierte "GARCIA LOPEZ" → "Garcia Lopez" */
   private convertirATituloMayuscula(texto: string): string {
     return texto
       .toLowerCase()
@@ -294,37 +299,30 @@ export class RegisterComponent implements OnInit {
   // ─── Envío del formulario ─────────────────────────────────────────────────
 
   async registrar(): Promise<void> {
-    this.mensajeError = '';
- 
-    // Marcar todos los campos como tocados para mostrar errores pendientes
+    this.mensajeError        = '';
+    this.mensajeConfirmacion = '';
+
     this.formularioRegistro.markAllAsTouched();
- 
+
     if (this.formularioRegistro.invalid) {
-      this.mensajeError = 'Por favor completá todos los campos correctamente.';
+      const camposConError = Object.keys(this.formularioRegistro.controls)
+        .filter(campo => this.formularioRegistro.get(campo)?.invalid)
+        .map(campo => NOMBRES_CAMPOS[campo]?.toLowerCase().replace(/^(el|la)\s/, '') ?? campo);
+
+      this.mensajeError = camposConError.length === 1
+        ? `Por favor corregí el campo: ${camposConError[0]}.`
+        : `Por favor corregí los siguientes campos: ${camposConError.join(', ')}.`;
       return;
     }
- 
+
     const { correo, contrasena } = this.formularioRegistro.value;
- 
-    const { error } = await this.auth.registrar(correo!, contrasena!);
- 
+    const { data, error } = await this.auth.registrar(correo!, contrasena!);
+
     if (error) {
       this.mensajeError = error.message.toUpperCase() || 'Error al registrarse.';
+      return;
     }
-    // Solo si el auth fue exitoso, guardamos los datos en la tabla
-      const { error: errorDb } = await this.db.guardarUsuario({
-        correo: correo!,
-        nombre: this.formularioRegistro.value.nombre!,
-        apellido: this.formularioRegistro.value.apellido!,
-        dni: Number(this.formularioRegistro.value.dni),
-        provincia: this.formularioRegistro.value.provincia!,
-        ciudad: this.formularioRegistro.value.ciudad!,
-        telefono: Number(this.formularioRegistro.value.telefono),
-      });
 
-      if (errorDb) {
-        this.mensajeError = 'Usuario creado pero hubo un error al guardar los datos.';
-      }
-      // La redirección la sigue manejando el AuthService
-    }
+    this.router.navigateByUrl('/login');
+  }
 }

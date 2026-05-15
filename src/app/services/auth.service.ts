@@ -4,31 +4,39 @@ import { Router } from '@angular/router';
 import { User } from '@supabase/supabase-js';
 import { filter, take } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
-
+ 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  sb = inject(SupabaseService)
-  router = inject(Router)
+  sb = inject(SupabaseService);
+  router = inject(Router);
   usuario_actual: User | null = null;
-  
+ 
+  // Flag para evitar que onAuthStateChange redirija durante el registro,
+  // ya que el componente necesita terminar de guardar los datos en la tabla
+  // antes de cualquier navegación.
+  private registrando = false;
+ 
   constructor() {
-    // Saber si el usuario está logueado o no
     this.sb.supabase.auth.onAuthStateChange((event, session) => {
       console.log(event, session);
-
-      if (session === null) { // Se cierra sesión o no hay sesión
+ 
+      // Si estamos en medio del registro, ignoramos el evento SIGNED_IN
+      // para que el componente pueda completar el guardado en la tabla primero.
+      if (this.registrando && event === 'SIGNED_IN') {
+        console.log('Registro en curso, se omite la redirección automática.');
+        return;
+      }
+ 
+      if (session === null) {
         this.usuario_actual = null;
-        
-        // Limpiar cualquier estado local de la aplicación
         this.limpiarEstadoLocal();
-        
-        // Redirigir al login
-        this.router.navigateByUrl("/login");
+        this.router.navigateByUrl('/login');
       } else {
         this.usuario_actual = session.user;
         console.log('URL actual:', this.router.url);
+ 
         // Esperamos a que el router esté estable antes de chequear la URL
         this.router.events.pipe(
           filter(e => e instanceof NavigationEnd),
@@ -39,7 +47,7 @@ export class AuthService {
             this.router.navigateByUrl('/home');
           }
         });
-
+ 
         // Si el router ya está en una de esas rutas y no hay navegación en curso
         const currentUrl = this.router.url;
         if (currentUrl === '/login' || currentUrl === '/registro' || currentUrl === '/') {
@@ -48,40 +56,45 @@ export class AuthService {
       }
     });
   }
-
+ 
   async iniciarSesion(email: string, password: string) {
     return await this.sb.supabase.auth.signInWithPassword({ email, password });
   }
-
+ 
   async registrar(email: string, password: string) {
-    return await this.sb.supabase.auth.signUp({ email, password });
+    this.registrando = true;
+    try {
+      const result = await this.sb.supabase.auth.signUp({ email, password });
+      return result;
+    } finally {
+      // El flag se apaga en registrarCompleto() una vez que
+      // el componente terminó de guardar todo en la base de datos.
+      // Usamos finally para garantizar que se limpie incluso si hay error en signUp.
+      this.registrando = false;
+    }
   }
-
+ 
+  // Llamar desde el componente DESPUÉS de guardar exitosamente en la tabla,
+  // para habilitar de nuevo la redirección automática.
+  registrarCompleto() {
+    this.registrando = false;
+  }
+ 
   async cerrarSesion() {
-    // Limpiar estado antes de cerrar sesión
     this.limpiarEstadoLocal();
-    
-    // Cerrar la sesión en Supabase
     const result = await this.sb.supabase.auth.signOut();
-    
-    // Asegurar que el usuario actual se limpie inmediatamente
     this.usuario_actual = null;
-    
     return result;
   }
-
+ 
   async obtenerUsuario() {
     return await this.sb.supabase.auth.getUser();
   }
-
+ 
   private limpiarEstadoLocal() {
-    // Limpiar cualquier dato almacenado localmente
-    // Por ejemplo, si tienes datos en localStorage o sessionStorage
-    
     // localStorage.removeItem('userData');
     // sessionStorage.clear();
-    
-    // Aquí puedes agregar cualquier otra limpieza de estado que necesites
     console.log('Estado local limpiado');
   }
 }
+ 

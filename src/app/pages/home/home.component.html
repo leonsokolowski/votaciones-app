@@ -1,17 +1,73 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="center-container">
+  <div class="contenedor-centrado">
     <ion-card>
-      <ion-card-header>
-        <ion-card-title class="ion-text-center">Bienvenido {{auth.usuario_actual?.email}}</ion-card-title>
-      </ion-card-header>
+
+      <!-- ── Encabezado con avatar ───────────────────────────────── -->
+      <div class="encabezado-home">
+        <div class="avatar-usuario">
+          {{ iniciales }}
+        </div>
+        <p class="etiqueta-bienvenida">Bienvenido/a</p>
+        <p class="correo-usuario">{{ auth.usuario_actual?.email }}</p>
+        <div class="badge-tipo">
+          <span class="badge-punto"></span>
+          {{ usuario?.tipo ?? 'Votante' }}
+        </div>
+      </div>
+
       <ion-card-content>
-          <div class="ion-padding">
-            <ion-button expand="block" (click)="logout()">
-              Cerrar Sesión
-            </ion-button>
+
+        <!-- ── Datos del usuario ───────────────────────────────────── -->
+        <p class="titulo-seccion">Tu información</p>
+
+        <div class="fila-info">
+          <div class="icono-info">
+            <ion-icon name="person-outline"></ion-icon>
           </div>
+          <div>
+            <p class="etiqueta-info">Nombre completo</p>
+            <p class="valor-info">{{ usuario?.nombre }} {{ usuario?.apellido }}</p>
+          </div>
+        </div>
+
+        <div class="fila-info">
+          <div class="icono-info">
+            <ion-icon name="card-outline"></ion-icon>
+          </div>
+          <div>
+            <p class="etiqueta-info">DNI</p>
+            <p class="valor-info">{{ usuario?.dni | number }}</p>
+          </div>
+        </div>
+
+        <div class="fila-info">
+          <div class="icono-info">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+          <div>
+            <p class="etiqueta-info">Ubicación</p>
+            <p class="valor-info">{{ usuario?.provincia }} · {{ usuario?.ciudad }}</p>
+          </div>
+        </div>
+
+        <div class="fila-info sin-borde">
+          <div class="icono-info">
+            <ion-icon name="call-outline"></ion-icon>
+          </div>
+          <div>
+            <p class="etiqueta-info">Teléfono</p>
+            <p class="valor-info">{{ usuario?.telefono }}</p>
+          </div>
+        </div>
+
+        <!-- ── Cerrar sesión ─────────────────────────────────────── -->
+        <div class="ion-padding-top">
+          <ion-button expand="block" (click)="logout()">
+            Cerrar sesión
+          </ion-button>
+        </div>
+
       </ion-card-content>
     </ion-card>
   </div>
-  
 </ion-content>

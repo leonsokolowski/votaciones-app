@@ -1,0 +1,164 @@
+// ─── Variables (misma paleta que login y registro) ────────────────────────────
+
+$azul-fondo:      #eaf4fc;
+$azul-borde:      #cde3f5;
+$azul-primario:   #4a9ec7;
+$azul-primario-h: #3a8eb7;
+$azul-titulo:     #1a5c82;
+$azul-label:      #5a9bbf;
+$azul-texto:      #1a3d52;
+$azul-muted:      #7aa8bf;
+
+$verde-badge-bg:  #e8f5e9;
+$verde-badge-dot: #4caf7d;
+$verde-badge-txt: #2e7d52;
+
+$radio-card:  18px;
+$radio-btn:   12px;
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+
+ion-content {
+  --background: linear-gradient(160deg, #{$azul-fondo} 0%, #f7fbff 60%, #edf7f2 100%);
+}
+
+.contenedor-centrado {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100%;
+  padding: 24px 0 32px;
+}
+
+// ─── Card ─────────────────────────────────────────────────────────────────────
+
+ion-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: $radio-card !important;
+  border: 1px solid $azul-borde;
+  box-shadow: 0 2px 16px rgba(100, 170, 220, 0.08) !important;
+  margin: 0;
+  overflow: hidden;
+}
+
+// ─── Encabezado ───────────────────────────────────────────────────────────────
+
+.encabezado-home {
+  background: $azul-fondo;
+  border-bottom: 1px solid $azul-borde;
+  padding: 28px 24px 22px;
+  text-align: center;
+}
+
+.avatar-usuario {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $azul-primario;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  letter-spacing: .02em;
+}
+
+.etiqueta-bienvenida {
+  font-size: 12px;
+  color: $azul-muted;
+  margin-bottom: 4px;
+  letter-spacing: .03em;
+}
+
+.correo-usuario {
+  font-size: 15px;
+  font-weight: 500;
+  color: $azul-titulo;
+  word-break: break-all;
+}
+
+.badge-tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: $verde-badge-bg;
+  border-radius: 20px;
+  padding: 4px 12px;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: $verde-badge-txt;
+  text-transform: capitalize;
+}
+
+.badge-punto {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $verde-badge-dot;
+  flex-shrink: 0;
+}
+
+// ─── Sección de datos ─────────────────────────────────────────────────────────
+
+.titulo-seccion {
+  font-size: 11px;
+  font-weight: 500;
+  color: $azul-label;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.fila-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid $azul-fondo;
+
+  &.sin-borde {
+    border-bottom: none;
+  }
+}
+
+.icono-info {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: $azul-fondo;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: $azul-primario;
+  font-size: 18px;
+}
+
+.etiqueta-info {
+  font-size: 11px;
+  color: $azul-muted;
+  margin-bottom: 2px;
+}
+
+.valor-info {
+  font-size: 14px;
+  font-weight: 500;
+  color: $azul-texto;
+}
+
+// ─── Botón cerrar sesión ──────────────────────────────────────────────────────
+
+ion-button[expand="block"] {
+  --background: #{$azul-primario};
+  --background-hover: #{$azul-primario-h};
+  --background-activated: #{$azul-primario-h};
+  --border-radius: #{$radio-btn};
+  --color: #fff;
+  --box-shadow: none;
+  font-weight: 500;
+  font-size: 14px;
+}

@@ -316,13 +316,48 @@ export class RegisterComponent implements OnInit {
     }
 
     const { correo, contrasena } = this.formularioRegistro.value;
-    const { data, error } = await this.auth.registrar(correo!, contrasena!);
 
+    // 1. Verificación de DNI y teléfono
+    const { dniExiste, telefonoExiste } = await this.db.verificarDatosUnicos(
+      Number(this.formularioRegistro.value.dni),
+      Number(this.formularioRegistro.value.telefono)
+    );
+
+    if (dniExiste) {
+      this.mensajeError = 'Ya existe un usuario registrado con ese DNI.';
+      return;
+    }
+    if (telefonoExiste) {
+      this.mensajeError = 'Ya existe un usuario registrado con ese número de teléfono.';
+      return;
+    }
+
+    // 2. Creación de usuario en Auth
+    const { error } = await this.auth.registrar(correo!, contrasena!);
     if (error) {
       this.mensajeError = error.message.toUpperCase() || 'Error al registrarse.';
       return;
     }
 
+    // 3. Guardado de datos en la tabla
+    const { error: errorDb } = await this.db.guardarUsuario({
+      correo: correo!,
+      nombre: this.formularioRegistro.value.nombre!,
+      apellido: this.formularioRegistro.value.apellido!,
+      dni: Number(this.formularioRegistro.value.dni),
+      provincia: this.formularioRegistro.value.provincia!,
+      ciudad: this.formularioRegistro.value.ciudad!,
+      telefono: Number(this.formularioRegistro.value.telefono),
+    });
+
+    if (errorDb) {
+      console.error('Error Supabase al guardar:', errorDb);
+      this.mensajeError = 'Error al guardar los datos. Intentá de nuevo.';
+      await this.auth.cerrarSesion();
+      return;
+    }
+
+    this.auth.registrarCompleto(); 
     this.router.navigateByUrl('/login');
   }
 }

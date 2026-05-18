@@ -270,14 +270,20 @@ export class RegisterComponent implements OnInit {
   private procesarCodigoDni(codigoCrudo: string): void {
     const partes = codigoCrudo.split('@').filter((p: string) => p.trim() !== '');
 
+    console.log('=== DNI PARTES ===');
+      partes.forEach((parte, index) => {
+        console.log(`partes[${index}] → ${parte}`);
+      });
+      console.log('==================');
+
     if (partes.length < 4) {
       this.mensajeError = 'No se pudo leer la información del DNI. Asegurate de enfocar bien el código de barras PDF417 (el más largo, al dorso del DNI).';
       return;
     }
 
-    const apellido    = this.convertirATituloMayuscula(partes[0]);
-    const nombre      = this.convertirATituloMayuscula(partes[1]);
-    const dni         = partes[3]?.replace(/\./g, '').trim();
+    const apellido    = this.convertirATituloMayuscula(partes[1]);
+    const nombre      = this.convertirATituloMayuscula(partes[2]);
+    const dni         = partes[4]?.replace(/\./g, '').trim();
     const primerNombre = nombre.split(' ')[0] ?? '';
 
     this.formularioRegistro.patchValue({ apellido, nombre: primerNombre, dni });
